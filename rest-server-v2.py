@@ -9,6 +9,7 @@ from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
  
 app = Flask(__name__, static_url_path = "")
+#app = Flask(__name__)
 api = Api(app)
 auth = HTTPBasicAuth()
  
@@ -60,7 +61,7 @@ class TaskListAPI(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         task = {
-            'id': tasks[-1]['id'] + 1,
+            'id': tasks[-1]['id'] + 1, # -1 is thr last index
             'title': args['title'],
             'description': args['description'],
             'done': False
@@ -105,5 +106,5 @@ class TaskAPI(Resource):
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint = 'tasks')
 api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint = 'task')
     
-if __name__ == '__main__':
-    app.run(debug = True)
+#if __name__ == '__main__':
+#    app.run(debug = True, host= '0.0.0.0')
