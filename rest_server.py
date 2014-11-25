@@ -3,7 +3,7 @@
 """Alternative version of the ToDo RESTful server implemented using the
 Flask-RESTful extension."""
 
-from flask import Flask, jsonify, abort, request, make_response, url_for
+from flask import Flask, jsonify, abort, request, make_response, url_for,render_template
 from flask.views import MethodView
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
@@ -105,6 +105,10 @@ class TaskAPI(Resource):
 
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint = 'tasks')
 api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint = 'task')
-    
-#if __name__ == '__main__':
-#    app.run(debug = True, host= '0.0.0.0')
+
+
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
