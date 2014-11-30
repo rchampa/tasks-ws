@@ -96,8 +96,14 @@ class TaskListAPI(Resource):
 
     def post(self):
         args = self.reqparse.parse_args()
+
+        if len(tasks)==0:
+            index = 1
+        else:
+            index = tasks[-1]['id'] + 1 # -1 is thr last index
+
         task = {
-            'id': tasks[-1]['id'] + 1, # -1 is thr last index
+            'id': index, 
             'title': args['title'],
             'description': args['description'],
             'done': False
