@@ -63,12 +63,8 @@ redis_tasks = myredis.lrange('tasks', 0, -1)
 
 if redis_tasks is not None:
     for single_task in redis_tasks:
-        #app.logger.debug(type(single_task))
         json_string = json.dumps(single_task)
-        #app.logger.debug(type(json_string))
         json_object = json.loads(json_string)
-        #app.logger.debug(json_object)
-        #app.logger.debug(type(json_object))
         mydict = ast.literal_eval(json_object)
         tasks.append(mydict)
 
