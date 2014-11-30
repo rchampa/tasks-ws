@@ -8,5 +8,6 @@ aniso8601==0.85
 gunicorn==19.1.1
 itsdangerous==0.24
 pytz==2014.9
+redis==2.10.3
 six==1.8.0
 wsgiref==0.1.2

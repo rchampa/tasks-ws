@@ -7,23 +7,42 @@ from flask import Flask, jsonify, abort, request, make_response, url_for,render_
 from flask.views import MethodView
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
+
+import json,ast
+import redis
+from constants import REDIS_URL
  
+myredis = redis.from_url(REDIS_URL)
 app = Flask(__name__, static_url_path = "")
 #app = Flask(__name__)
 api = Api(app)
 auth = HTTPBasicAuth()
+
+#comentar en prod
+import logging
+from logging import StreamHandler
+file_handler = StreamHandler()
+app.logger.setLevel(logging.DEBUG)  # set the desired logging level here
+app.logger.addHandler(file_handler)
+#comentar en prod
  
 @auth.get_password
 def get_password(username):
-    if username == 'miguel':
-        return 'python'
+    if username == 'todo':
+        return 'ws'
     return None
  
 @auth.error_handler
 def unauthorized():
     return make_response(jsonify( { 'message': 'Unauthorized access' } ), 403)
     # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
+
+
+#v = {'id': 1,'title': u'Buy groceries','description': u'Milk, Cheese, Pizza, Fruit, Tylenol','done': False}
+#app.logger.debug(type(v))
+
     
+"""
 tasks = [
     {
         'id': 1,
@@ -37,7 +56,24 @@ tasks = [
         'description': u'Need to find a good Python tutorial on the web', 
         'done': False
     }
-]
+]"""
+
+tasks = []
+redis_tasks = myredis.lrange('tasks', 0, -1)
+
+if redis_tasks is not None:
+    for single_task in redis_tasks:
+        #app.logger.debug(type(single_task))
+        json_string = json.dumps(single_task)
+        #app.logger.debug(type(json_string))
+        json_object = json.loads(json_string)
+        #app.logger.debug(json_object)
+        #app.logger.debug(type(json_object))
+        mydict = ast.literal_eval(json_object)
+        tasks.append(mydict)
+
+
+#myredis.lpush(tasks[1])
  
 task_fields = {
     'title': fields.String,
@@ -108,7 +144,7 @@ api.add_resource(TaskAPI, '/todo/api/v1.0/tasks/<int:id>', endpoint = 'task')
 
 
 
-@app.route('/register')
-def register():
+@app.route('/how-to-use-web-services')
+def howtouse():
     return render_template('register.html')
 
