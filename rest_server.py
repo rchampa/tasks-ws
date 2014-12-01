@@ -59,7 +59,7 @@ tasks = [
 ]"""
 
 tasks = []
-redis_tasks = myredis.lrange('tasks', 0, -1)
+redis_tasks = myredis.zrange('tasks', 0, -1, False)
 
 if redis_tasks is not None:
     for single_task in redis_tasks:
@@ -105,6 +105,7 @@ class TaskListAPI(Resource):
             'done': False
         }
         tasks.append(task)
+        myredis.zadd('tasks',str(task),float(index))
         return { 'task': marshal(task, task_fields) }, 201
 
 class TaskAPI(Resource):
@@ -132,6 +133,10 @@ class TaskAPI(Resource):
         for k, v in args.iteritems():
             if v != None:
                 task[k] = v
+
+        #zremrangebyscore tasks 2 2
+        myredis.zremrangebyscore('tasks',float(id),float(id)) #remove
+        myredis.zadd('tasks',str(task),float(id))
         return { 'task': marshal(task, task_fields) }
 
     def delete(self, id):
@@ -139,6 +144,7 @@ class TaskAPI(Resource):
         if len(task) == 0:
             abort(404)
         tasks.remove(task[0])
+        myredis.zremrangebyscore('tasks',float(id),float(id)) #remove
         return { 'result': True }
 
 api.add_resource(TaskListAPI, '/todo/api/v1.0/tasks', endpoint = 'tasks')
